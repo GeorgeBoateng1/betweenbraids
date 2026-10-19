@@ -252,3 +252,21 @@ body::after{
   .tilt,.reveal.in-view.tilt{transform:none !important;transition:none}
   .glow::before{display:none}
 }
+
+/* ------------------------------------------------------------------ *
+ * Drop the asterisk motif
+ * It appeared three times: as lime markers before each item in the trust
+ * band, as a large brown mark in the care section, and as an oversized
+ * lime watermark behind the closing. All three come out; the elements
+ * stay in the markup, already aria-hidden, so nothing is announced.
+ * ------------------------------------------------------------------ */
+.trust-line>span::before{content:none}
+.care-symbol,.closing-symbol{display:none}
+
+/* The trust items were spaced around the markers, so they get their own
+   rhythm back now the markers are gone. */
+.trust-line{gap:clamp(18px,4vw,48px)}
+@media(max-width:600px){.trust-line{gap:14px 10px}}
+
+/* The care paragraph no longer sits beside a 90px glyph. */
+.care-intro-bottom{gap:clamp(18px,3vw,34px)}
