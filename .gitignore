@@ -1,0 +1,8 @@
+# Full-resolution photo masters.
+# These are originals of client work, including minors, and only the
+# derived, cropped versions in dist/assets are needed to build or serve
+# the site. Kept out of the repo because it is public.
+source-assets/
+
+.DS_Store
+*.log

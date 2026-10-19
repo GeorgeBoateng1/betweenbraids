@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Between Braids · Device preview</title>
+<style>
+  :root{
+    --bg:#1a1613; --panel:#241e1a; --line:#3a3029; --ink:#f3ece3;
+    --muted:#a2948a; --accent:#e5eda8; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+
+  header{
+    position:sticky; top:0; z-index:10; display:flex; flex-wrap:wrap; gap:18px;
+    align-items:center; padding:14px 20px; background:rgba(26,22,19,.92);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+  }
+  h1{margin:0; font-size:14px; font-weight:600; letter-spacing:-.01em; white-space:nowrap}
+  h1 small{display:block; font-weight:400; font-size:11px; color:var(--muted); letter-spacing:.02em}
+
+  .group{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .group>span{font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted)}
+
+  button{
+    font:inherit; font-size:12px; color:var(--ink); background:transparent;
+    border:1px solid var(--line); border-radius:99px; padding:6px 13px; cursor:pointer;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  button:hover{border-color:#5c4d43; background:#2e2621}
+  button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#241e1a; font-weight:600}
+  button.plain[aria-pressed="true"]{background:#3a3029; border-color:#5c4d43; color:var(--ink)}
+
+  input[type=range]{width:120px; accent-color:var(--accent)}
+
+  main{display:flex; gap:28px; padding:26px 20px 48px; overflow-x:auto; align-items:flex-start}
+
+  figure{margin:0; display:flex; flex-direction:column; gap:10px; flex:0 0 auto}
+  figcaption{display:flex; justify-content:space-between; gap:12px; align-items:baseline; color:var(--muted); font-size:11px}
+  figcaption b{color:var(--ink); font-size:12px; font-weight:600}
+
+  /* The shell is sized to the scaled frame so the row lays out correctly. */
+  .shell{position:relative; border-radius:var(--radius); background:var(--panel); box-shadow:0 18px 50px -24px #000}
+  .shell iframe{
+    position:absolute; top:0; left:0; border:0; display:block;
+    border-radius:var(--radius); background:#faf8f2; transform-origin:0 0;
+  }
+  .shell.phone{padding:0; border:8px solid #0e0b09; border-radius:30px}
+  .shell.phone iframe{border-radius:22px}
+
+  .empty{padding:60px 20px; color:var(--muted)}
+  kbd{font:inherit; font-size:11px; border:1px solid var(--line); border-radius:5px; padding:1px 5px; background:#2e2621}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Between Braids<small id="src">preview</small></h1>
+
+  <div class="group" id="devices"><span>Devices</span></div>
+
+  <div class="group">
+    <span>Scale</span>
+    <input type="range" id="scale" min="30" max="100" step="5" value="55">
+    <output id="scaleOut">55%</output>
+  </div>
+
+  <div class="group">
+    <button id="rotate" class="plain" aria-pressed="false">Rotate</button>
+    <button id="reload" class="plain">Reload all</button>
+  </div>
+</header>
+
+<main id="stage"><p class="empty">Pick a device above.</p></main>
+
+<script>
+(function(){
+  // Same scheme and host as the site, so no mixed-content blocking.
+  const SITE = location.protocol + "//" + location.hostname + ":3303/";
+  document.getElementById("src").textContent = SITE;
+
+  const DEVICES = [
+    { id:"se",      name:"iPhone SE",        w:375,  h:667,  phone:true,  on:true  },
+    { id:"i15",     name:"iPhone 15",        w:393,  h:852,  phone:true,  on:true  },
+    { id:"i15max",  name:"iPhone 15 Pro Max",w:430,  h:932,  phone:true,  on:true  },
+    { id:"s24",     name:"Galaxy S24",       w:360,  h:780,  phone:true,  on:false },
+    { id:"pixel",   name:"Pixel 8",          w:412,  h:915,  phone:true,  on:false },
+    { id:"ipadmini",name:"iPad mini",        w:744,  h:1133, phone:false, on:true  },
+    { id:"ipadpro", name:"iPad Pro 11",      w:834,  h:1194, phone:false, on:false },
+    { id:"laptop",  name:"Laptop",           w:1280, h:800,  phone:false, on:false },
+  ];
+
+  const stage = document.getElementById("stage");
+  const bar = document.getElementById("devices");
+  const scale = document.getElementById("scale");
+  const scaleOut = document.getElementById("scaleOut");
+  const rotate = document.getElementById("rotate");
+
+  let landscape = false;
+
+  DEVICES.forEach(d => {
+    const b = document.createElement("button");
+    b.textContent = d.name;
+    b.setAttribute("aria-pressed", String(d.on));
+    b.onclick = () => { d.on = !d.on; b.setAttribute("aria-pressed", String(d.on)); render(); };
+    bar.append(b);
+  });
+
+  function render(){
+    const k = scale.value / 100;
+    const picked = DEVICES.filter(d => d.on);
+    stage.replaceChildren();
+
+    if (!picked.length){
+      const p = document.createElement("p");
+      p.className = "empty";
+      p.textContent = "Pick a device above.";
+      stage.append(p);
+      return;
+    }
+
+    for (const d of picked){
+      const w = landscape ? d.h : d.w;
+      const h = landscape ? d.w : d.h;
+
+      const fig = document.createElement("figure");
+
+      const shell = document.createElement("div");
+      shell.className = "shell" + (d.phone ? " phone" : "");
+      shell.style.width = (w * k) + "px";
+      shell.style.height = (h * k) + "px";
+
+      const frame = document.createElement("iframe");
+      frame.src = SITE;
+      frame.width = w;
+      frame.height = h;
+      frame.loading = "eager";
+      frame.title = d.name + " preview";
+      frame.style.width = w + "px";
+      frame.style.height = h + "px";
+      frame.style.transform = "scale(" + k + ")";
+      shell.append(frame);
+
+      const cap = document.createElement("figcaption");
+      const b = document.createElement("b");
+      b.textContent = d.name;
+      const s = document.createElement("span");
+      s.textContent = w + " × " + h;
+      cap.append(b, s);
+
+      fig.append(cap, shell);
+      stage.append(fig);
+    }
+  }
+
+  scale.oninput = () => { scaleOut.textContent = scale.value + "%"; render(); };
+  rotate.onclick = () => {
+    landscape = !landscape;
+    rotate.setAttribute("aria-pressed", String(landscape));
+    render();
+  };
+  document.getElementById("reload").onclick = render;
+
+  render();
+})();
+</script>
+</body>
+</html>
