@@ -252,3 +252,103 @@ body::after{
   .tilt,.reveal.in-view.tilt{transform:none !important;transition:none}
   .glow::before{display:none}
 }
+
+/* ================================================================== *
+ * Premium pass
+ * The accents were a friendly-salon palette: lime, lavender, rose. They
+ * read approachable rather than expensive, and none of them came from the
+ * brand. The logo is a brown serif and the original site's accent was a
+ * dusty bronze, so the palette moves toward warm metal and deep neutrals.
+ * Tokens are redefined here rather than hunted through every rule.
+ * ================================================================== */
+:root{
+  --paper:#f8f5ee;        /* warmer paper */
+  --ink:#241a15;          /* deeper, for contrast that feels printed */
+  --muted:#857668;
+  --line:#ddd2c4;
+  --butter:#e6d5ac;       /* champagne, replaces the lime */
+  --lilac:#ece6da;        /* warm bone, replaces the lavender */
+  --rose:#e7d0c3;         /* muted a touch */
+  --white:#fffdf8;
+  --brass:#a8824e;        /* hairlines, rules and small marks */
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-lux:cubic-bezier(.16,1,.3,1);
+}
+
+/* ---------- type: tighter display, wider eyebrows, airier body ---------- */
+h1,h2,.statement{letter-spacing:-.045em}
+.eyebrow{letter-spacing:.24em;color:var(--brass)}
+.section-head>p,.home-copy>p:not(.eyebrow),.care-intro-bottom p{line-height:1.75}
+.hero-bottom .intro{line-height:1.7}
+
+/* ---------- more air between movements ---------- */
+.section{padding-top:clamp(70px,9vw,130px);padding-bottom:clamp(70px,9vw,130px)}
+.results-section{padding-top:clamp(70px,9vw,130px);padding-bottom:clamp(70px,9vw,130px)}
+
+/* ---------- materials: hairlines and directional light ---------- */
+.service{border-color:rgba(36,26,21,.10)}
+.quote-note,.booking-calendar,.summary{border:1px solid var(--line)}
+.service-detail{box-shadow:0 40px 90px -60px rgba(36,26,21,.55)}
+.process-step{box-shadow:0 30px 70px -55px rgba(36,26,21,.45)}
+
+/* The selected service row was a heavy lime fill. A quiet wash with a
+   brass edge carries the same signal with less shouting. */
+.service[aria-pressed="true"],.service.is-active{
+  background:linear-gradient(90deg,rgba(168,130,78,.10),rgba(168,130,78,.02));
+  box-shadow:inset 3px 0 0 var(--brass);
+}
+
+/* ---------- the one bright pill becomes warm metal ---------- */
+.button.light,.floating-cta>strong,.site-header .button.small{letter-spacing:.01em}
+
+/* ---------- motion: longer, with a slower settle ---------- */
+.reveal{transition:opacity 1.1s var(--ease-lux),transform 1.1s var(--ease-lux)}
+.tilt,.reveal.in-view.tilt{transition:transform .9s var(--ease-lux),box-shadow .9s var(--ease-lux)}
+.service,.quick-date,.check-row,.policy-check.single{transition-duration:.45s}
+
+@media(prefers-reduced-motion:reduce){
+  .reveal{transition:none}
+}
+
+/* ---------- the last hardcoded colours, brought into the system ---------- */
+
+/* A quiet tonal ramp across the three steps reads more considered than
+   three unrelated pastels. */
+.process-step{background:#eee9de}
+.process-step:nth-child(2){background:#e8dfd0}
+.process-step:nth-child(3){background:var(--rose)}
+
+/* Was a lavender-grey; now warm paper so it sits in the same family. */
+.results-section{background:#f1ece2}
+
+/* The announcement bar was candy pink. Espresso with a brass rule under it
+   is the quieter, more expensive version of the same idea. */
+.announcement{
+  background:var(--ink);color:#efe6d7;
+  border-bottom:1px solid rgba(168,130,78,.35);
+  letter-spacing:.14em;text-transform:uppercase;font-size:9.5px;
+}
+.announcement span{color:rgba(239,230,215,.62)}
+
+/* The sticker went washed out against the warm brick once the lavender
+   left. Ink on the photograph, with the brand's own brass hairline. */
+.premium-hero .photo-caption{
+  background:var(--ink);color:#f4ece0;
+  border:1px solid rgba(168,130,78,.4);
+  box-shadow:0 18px 40px -22px rgba(36,26,21,.7);
+}
+.premium-hero .photo-caption>span{color:#f4ece0}
+
+/* The seal reads as struck metal rather than a highlighter dot. */
+.experience-seal{
+  background:radial-gradient(120% 120% at 30% 25%,#f0e3c2,var(--butter) 55%,#d8c192);
+  color:var(--ink);
+  box-shadow:0 14px 34px -18px rgba(36,26,21,.55);
+}
+
+/* The closing band kept an olive accent word and a lime asterisk from the
+   old palette. Both move into the bronze family, and the mark drops back
+   to a tonal watermark rather than a contrasting shape. */
+.closing h2 em{color:#6d4c22}
+.closing-symbol{color:rgba(36,26,21,.085)}
+@media(max-width:600px){.closing-symbol{color:rgba(36,26,21,.085)}}
