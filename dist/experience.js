@@ -138,3 +138,124 @@ reducedMotion.addEventListener('change',e=>{if(e.matches){document.querySelector
 
   render();
 })();
+
+/* ================================================================== *
+ * Depth
+ * One scroll loop and one pointer loop, both rAF-batched, driving CSS
+ * custom properties. Nothing here reads layout during a write, and the
+ * whole block stands down for reduced motion.
+ * ================================================================== */
+(function(){
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const fine = matchMedia('(hover:hover) and (pointer:fine)');
+  if (reduced.matches) return;
+
+  /* ---------- scroll: parallax layers + progress ---------- */
+  const bar = document.createElement('div');
+  bar.className = 'scroll-progress';
+  document.body.append(bar);
+
+  // [selector, speed]. Positive lags behind the scroll, negative leads it.
+  // Foreground pieces get the larger numbers, which is what reads as depth.
+  const layers = [];
+  const add = (sel, speed) =>
+    document.querySelectorAll(sel).forEach(el => layers.push({ el, speed }));
+
+  add('.experience-seal', -0.07);
+  add('.photo-caption', 0.09);
+  add('.home-photo img', 0.07);
+  add('.service-photo img', 0.05);
+
+  let ticking = false;
+  function onScroll(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const vh = innerHeight;
+
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - vh;
+      bar.style.setProperty('--p', max > 0 ? Math.min(1, scrollY / max) : 0);
+
+      for (const { el, speed } of layers){
+        const r = el.getBoundingClientRect();
+        if (r.bottom < -200 || r.top > vh + 200) continue;
+        // Distance of this element's centre from the viewport centre.
+        const offset = (r.top + r.height / 2) - vh / 2;
+        el.style.setProperty('--py', (offset * speed).toFixed(1) + 'px');
+      }
+    });
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+  onScroll();
+
+  /* ---------- pointer: card tilt ---------- */
+  if (fine.matches){
+    const tilt = (el, max) => {
+      el.classList.add('tilt');
+      let raf = 0, nx = 0, ny = 0;
+      el.addEventListener('pointermove', e => {
+        const r = el.getBoundingClientRect();
+        nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+        ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
+        el.classList.add('is-tilting');
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          el.style.setProperty('--ry', (nx * max).toFixed(2) + 'deg');
+          el.style.setProperty('--rx', (-ny * max).toFixed(2) + 'deg');
+        });
+      });
+      el.addEventListener('pointerleave', () => {
+        el.classList.remove('is-tilting');
+        el.style.setProperty('--rx', '0deg');
+        el.style.setProperty('--ry', '0deg');
+      });
+    };
+
+    document.querySelectorAll('.process-step').forEach(el => tilt(el, 4.5));
+    const detail = document.querySelector('.service-detail');
+    if (detail) tilt(detail, 2.2);
+
+    /* ---------- pointer: light across the dark bands ---------- */
+    document.querySelectorAll('.home-section, .closing').forEach(sec => {
+      sec.classList.add('glow');
+      let raf = 0, x = 0, y = 0;
+      sec.addEventListener('pointermove', e => {
+        const r = sec.getBoundingClientRect();
+        x = ((e.clientX - r.left) / r.width) * 100;
+        y = ((e.clientY - r.top) / r.height) * 100;
+        sec.classList.add('is-lit');
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          sec.style.setProperty('--gx', x.toFixed(1) + '%');
+          sec.style.setProperty('--gy', y.toFixed(1) + '%');
+        });
+      });
+      sec.addEventListener('pointerleave', () => sec.classList.remove('is-lit'));
+    });
+  }
+
+  /* ---------- the 15 counts up the first time it is seen ---------- */
+  const seal = document.querySelector('.experience-seal strong');
+  if (seal){
+    const target = parseInt(seal.textContent, 10);
+    if (Number.isFinite(target)){
+      new IntersectionObserver((entries, obs) => {
+        if (!entries[0].isIntersecting) return;
+        obs.disconnect();
+        const started = performance.now(), run = 900;
+        const step = now => {
+          const t = Math.min(1, (now - started) / run);
+          // ease-out so it settles rather than stops dead
+          seal.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
+          if (t < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }, { threshold: 0.6 }).observe(seal);
+    }
+  }
+})();
