@@ -9,7 +9,7 @@ function updateFeature(value){
  document.getElementById('feature-copy').textContent=detailCopy[value];
  document.getElementById('feature-price').textContent=services[value].price;
  document.getElementById('feature-price-note').textContent=value==='tangled'?'Final price by photo quote':'Service price';
- const link=document.getElementById('feature-book');link.replaceChildren(document.createTextNode(bookLabels[value]+' '));const arrow=document.createElement('span');arrow.textContent='↗';arrow.setAttribute('aria-hidden','true');link.append(arrow);
+ const link=document.getElementById('feature-book');link.replaceChildren(document.createTextNode(bookLabels[value]));
  const copy=document.querySelector('.service-detail-copy');copy.classList.remove('changing');if(!reducedMotion.matches){requestAnimationFrame(()=>requestAnimationFrame(()=>copy.classList.add('changing')));}
 }
 /* Picking a service is an intent signal, so it carries straight through to

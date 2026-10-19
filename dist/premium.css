@@ -270,3 +270,41 @@ body::after{
 
 /* The care paragraph no longer sits beside a 90px glyph. */
 .care-intro-bottom{gap:clamp(18px,3vw,34px)}
+
+/* ------------------------------------------------------------------ *
+ * No arrows
+ * Every button and link carried a ↗, which is the clearest template tell
+ * on the page. The glyphs are gone from the markup; what is left here is
+ * the spacing they used to occupy and the circles that held nothing else.
+ * Functional controls keep their marks: the calendar's ‹ ›, the compare
+ * handle, and the FAQ's + and −.
+ * ------------------------------------------------------------------ */
+
+/* Buttons were laid out as text pushed away from a circle. Without the
+   circle they centre and tighten. */
+.button{justify-content:center;gap:0;padding-left:30px;padding-right:30px}
+.button.small{padding-left:22px;padding-right:22px}
+.review-button:after{content:none}
+.review-button{justify-content:center}
+
+/* The circles existed only to hold an arrow. */
+.round-link,
+.service-link,
+.hero-scroll>span{display:none}
+
+/* The service row's last column is gone, so the price sits at the end. */
+.service{grid-template-columns:30px 1fr auto}
+@media(max-width:600px){.service{grid-template-columns:18px 1fr auto;gap:8px}}
+
+/* The scroll cue is now just its label. */
+.hero-scroll{gap:0}
+
+/* The sticker no longer needs room for a hand-drawn arrow. */
+.premium-hero .photo-caption{display:block}
+
+/* Text links read as links through the underline rather than a glyph. */
+.process-step a{
+  display:inline-block;border-bottom:1px solid currentColor;padding-bottom:2px;
+  text-decoration:none;
+}
+.process-step a:hover{border-bottom-color:transparent}
