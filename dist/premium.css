@@ -104,3 +104,84 @@ body.nav-open .site-header{z-index:95}
   .hero-image-wrap img{object-position:52% 38%}
   .home-photo img{object-position:50% 24%}
 }
+
+/* ------------------------------------------------------------------ *
+ * Booking: fewer steps, bigger targets
+ * ------------------------------------------------------------------ */
+
+/* The soonest open dates, so the calendar is optional rather than the
+   only way through. */
+.quick-dates{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.quick-date{
+  flex:1 1 auto;min-height:52px;padding:12px 16px;border:1px solid var(--line,#d9cec1);
+  border-radius:12px;background:var(--white,#fffdf8);color:var(--ink);
+  font:inherit;font-size:14px;font-weight:600;cursor:pointer;
+  transition:border-color .18s var(--ease),background .18s var(--ease);
+}
+.quick-date:hover{border-color:var(--ink);background:#f3ece2}
+.quick-date[aria-pressed="true"]{background:var(--butter);border-color:var(--butter)}
+
+.calendar-toggle{margin:0 0 6px}
+.calendar-toggle>summary{
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;list-style:none;
+  padding:10px 0;font-size:13px;font-weight:600;color:var(--muted);
+}
+.calendar-toggle>summary::-webkit-details-marker{display:none}
+.calendar-toggle>summary::after{content:"+";font-size:15px;line-height:1}
+.calendar-toggle[open]>summary::after{content:"–"}
+.calendar-toggle>summary:hover{color:var(--ink)}
+
+/* Checkbox rows sized for a thumb, not a mouse. */
+.check-row,.policy-check.single{
+  display:flex;gap:12px;align-items:flex-start;margin:18px 0 0;
+  padding:14px;border:1px solid var(--line,#d9cec1);border-radius:12px;
+  background:var(--white,#fffdf8);cursor:pointer;line-height:1.5;
+  transition:border-color .18s var(--ease);
+}
+.check-row:hover,.policy-check.single:hover{border-color:var(--ink)}
+.check-row input,.policy-check.single input{margin-top:2px;width:20px;height:20px;flex:0 0 auto}
+.check-row span{font-size:14px}
+.policy-check.single{margin-top:22px;font-size:13px}
+.policy-check.single b{font-weight:700}
+
+.note-toggle{margin:18px 0 0}
+.note-toggle>summary{
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;list-style:none;
+  padding:10px 0;font-size:13px;font-weight:600;color:var(--muted);
+}
+.note-toggle>summary::-webkit-details-marker{display:none}
+.note-toggle>summary::after{content:"+";font-size:15px;line-height:1}
+.note-toggle[open]>summary::after{content:"–"}
+.note-toggle>summary:hover{color:var(--ink)}
+.note-toggle textarea{margin-top:8px}
+
+@media(max-width:600px){
+  .quick-date{flex:1 1 100%;min-height:54px;font-size:15px}
+  .check-row span,.policy-check.single{font-size:13px}
+  /* Thumb-sized final action, and room above the floating bar. */
+  .review-button{min-height:56px;font-size:14px}
+}
+
+/* The FAQ accordion styles `details`/`summary` globally: a bottom border,
+   vertical padding, and an absolutely positioned "+". These two toggles are
+   inline controls inside the form, so they opt out of all of it. */
+.calendar-toggle,.note-toggle{border-bottom:0;padding:0}
+.calendar-toggle>summary,.note-toggle>summary{position:static;padding-right:0;font-size:13px}
+.calendar-toggle>summary::after,.note-toggle>summary::after{
+  position:static;top:auto;right:auto;font-size:15px;
+}
+
+/* `.appointment-details label` sets display:block and outranks a single
+   class, so these rows need the matching specificity to stay flex. */
+.appointment-details .check-row,
+.appointment-details .policy-check.single{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:14px;border:1px solid var(--line,#d9cec1);border-radius:12px;
+  background:var(--white,#fffdf8);cursor:pointer;line-height:1.5;
+}
+.appointment-details .check-row{margin:18px 0 0;font-size:14px}
+.appointment-details .policy-check.single{margin:22px 0 0;font-size:13px}
+.appointment-details .check-row input,
+.appointment-details .policy-check.single input{margin-top:2px;width:20px;height:20px;flex:0 0 auto}
+.appointment-details .check-row span,
+.appointment-details .policy-check.single span{flex:1 1 auto}
