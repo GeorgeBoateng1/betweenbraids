@@ -382,9 +382,7 @@ body::after{
 .after-form-ask{
   margin:0;padding:14px 16px;border-radius:12px;background:var(--white);
   border:1px solid var(--line);font-size:13px;line-height:1.6;
-  transition:border-color .3s var(--ease),background .3s var(--ease);
 }
-.after-form-ask.is-flagged{border-color:var(--ink);background:var(--butter)}
 .another-time{
   display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;
   padding:18px;border-radius:14px;background:var(--lilac);

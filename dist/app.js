@@ -79,7 +79,7 @@ document.querySelectorAll('[data-service]').forEach(b=>b.onclick=()=>{$('service
 $('home-cta').addEventListener('click',()=>{document.querySelector('input[value=home]').checked=true;syncSummary();});
 function reviewSelection(){
 if(isQuote()) return requestQuote();
-if(!chosenDate||!chosenTime){$('feedback').textContent='Please choose a date and time.';return {error:'Date and time are required.'};}const home=document.querySelector('input[name=location]:checked').value==='home';if(home&&!$('area').value.trim()){$('feedback').textContent='Please enter the address for your home visit.';$('area').focus();return {error:'Home visit address is required.'};}if(home&&travelFee()<=0){$('feedback').textContent='Please enter the distance in miles so the travel fee can be added.';$('miles').focus();return {error:'Home visit distance is required.'};}for(const id of ['client-name','client-phone',...($('allergies-toggle').checked?['allergy-details']:[])]){const field=$(id);if(!field.value.trim()||!field.checkValidity()){$('feedback').textContent=id==='allergy-details'?'Please list your product allergies or sensitivities.':'Please add your name and a phone number.';field.focus();field.reportValidity();return {error:'Appointment details are required.'};}}if(!$('policy').checked){$('feedback').textContent='Please confirm the deposit and cancellation policy.';$('policy').focus();return {error:'Policy acknowledgement is required.'};}const s=services[$('service-select').value];
+if(!chosenDate||!chosenTime){$('feedback').textContent='Please choose a date and time.';return {error:'Date and time are required.'};}const home=document.querySelector('input[name=location]:checked').value==='home';if(home&&!$('area').value.trim()){$('feedback').textContent='Please enter your city or ZIP code for a home visit.';$('area').focus();return {error:'Home visit area is required.'};}if(home&&travelFee()<=0){$('feedback').textContent='Please enter the distance in miles so the travel fee can be added.';$('miles').focus();return {error:'Home visit distance is required.'};}for(const id of ['client-name','client-phone',...($('allergies-toggle').checked?['allergy-details']:[])]){const field=$(id);if(!field.value.trim()||!field.checkValidity()){$('feedback').textContent=id==='allergy-details'?'Please list your product allergies or sensitivities.':'Please add your name and a phone number.';field.focus();field.reportValidity();return {error:'Appointment details are required.'};}}if(!$('policy').checked){$('feedback').textContent='Please confirm the deposit and cancellation policy.';$('policy').focus();return {error:'Policy acknowledgement is required.'};}const s=services[$('service-select').value];
 const c=charges();
 const host=$('review-content');
 host.replaceChildren();
@@ -111,10 +111,6 @@ row('Paid today',money(c.now),'receipt-paid');
 row('Balance due on the day',money(c.balance),c.balance===0?'receipt-clear':'');
 if(c.balance===0) note('Paid in full. Nothing to pay on the day.');
 
-section('Terms');
-note('Payments, including the deposit, are nonrefundable.');
-note('Give 24 to 48 hours\u2019 notice to cancel or reschedule. Your deposit can move once to a new date.');
-if(!home) note('The appointment address is sent by text once your booking and payment are confirmed.');
 
 $('feedback').textContent='';
 $('selection-dialog').showModal();return {status:'preview_only',service:s.name,price:s.price,date:formatDate(chosenDate),time:chosenTime,location:home?'home':'studio',reserved:false};}
@@ -201,9 +197,3 @@ function requestQuote(){
   return {status:'preview_only',request:'quote',reserved:false};
 }
 
-/* Nothing is reserved by a message, so this points at the question route. */
-const askTime=$('request-time');
-if(askTime) askTime.onclick=()=>{
-  const ask=document.querySelector('.after-form-ask');
-  if(ask){ask.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});ask.classList.add('is-flagged');setTimeout(()=>ask.classList.remove('is-flagged'),2200);}
-};
